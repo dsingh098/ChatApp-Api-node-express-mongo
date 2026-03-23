@@ -5,9 +5,9 @@ const bcrypt = require('bcryptjs')
 
 const register =  async (req, res) => {
  try {
-    const {name, email, password, name} = req.body
+    const {name, email, password, username} = req.body
 
-    if(!name || !email || !password) {
+    if(!username || !email || !password) {
         return res.status(400).json({
             messsage:"All fields are required"
         })
@@ -26,12 +26,25 @@ const register =  async (req, res) => {
     const hashedpassword = await bcrypt.hash(password, salt)
 
     const user = await User.create({
-        user: user.name,
-        username: user.username,
-        email: user.email,
-        password: hashedpassword
+    name: name,
+    username: username,
+    email: email,
+    password: hashedpassword
+})
+    const token = generateToken(user)
+
+    res.cookie("token", token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "strict",
+        maxAge: 24 * 60 * 60 * 1000
     })
 
+    return res.status(201).json({
+        message:"User registered successfully",
+        user: { id: user._id, name: user.name, email: user.email, username: user.username},
+        token
+    })
     
  } catch (error) {
     return res.status(500).json({
