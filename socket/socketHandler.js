@@ -1,4 +1,5 @@
-const onlineUsers = new Map() // userId → socketId
+const onlineUsers = new Map() //
+//  userId → socketId
 const jwt = require("jsonwebtoken")
 const Conversation = require("../models/conversion.model")
 
